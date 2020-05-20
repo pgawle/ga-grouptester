@@ -1,0 +1,16 @@
+{
+  "name": "ga_grouptester",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app3.js",
+  "dependencies": {
+    "csv-parse": "^4.9.1",
+    "puppeteer": "^3.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
