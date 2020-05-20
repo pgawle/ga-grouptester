@@ -11,7 +11,7 @@ const getUrls = (filename) => {
   });
 
   return records.map(row => {
-    return {url: row.URL, group: row['Content Group']}
+    return {page: row['Page'],url: row.URL, group: row['Content Group']}
   });
 }
 

@@ -1,8 +1,11 @@
 'use strict';
 const puppeteer = require('puppeteer');
+const fs = require("fs");
 const getDataFromFile = require('./getDataFromFile.js').getDataFromFile;
 
-const csvFile = "data_example.csv";
+// const csvFile = "./temp_data/All.csv";
+const csvFile = "./data_example.csv";
+const resultPath = "./build/output.csv"
 const waitTime = 2000;
 
 
@@ -31,19 +34,34 @@ const reqUrls = getDataFromFile(csvFile);
           cg1Key = key.split('=')[1]
         }
       }
-      // console.log(baseData, request.headers().referer)
 
-      if(baseData === undefined){
+      if (baseData === undefined) {
         console.error(`No group for ${request.headers().referer}`)
-      }else {
-        if(baseData.group === cg1Key){
+      } else {
+        try {
+
+          // Append to file CVS in build to import to excel
+          fs.appendFile(resultPath, `${baseData.page},${baseData.group},${cg1Key},${baseData.url}\n`, 'utf8',
+            function (err) {
+              if (err) throw err;
+          });
+
+        } catch (e) {
+
+
+
+            console.log("Couldn't fetch page " + e);
+
+        }
+
+        if (baseData.group === cg1Key) {
           console.log(`PASS: ${baseData.url}`)
-        }else{
+        } else {
           console.log({
             test: {
               test_result: baseData.group === cg1Key ? "PASS" : "FAIL",
               url: baseData.url,
-              cvs_group: baseData.group,
+              required_group: baseData.group,
               group_send: cg1Key
             }
           });
@@ -57,7 +75,13 @@ const reqUrls = getDataFromFile(csvFile);
   });
 
   try {
-    for (var i = 0; i < reqUrls.length; i++) {
+    fs.mkdirSync('build', {recursive: true});
+    fs.writeFileSync(resultPath, '')
+    fs.appendFile(resultPath, 'Page,Content Group,Send Group,URL\n', 'utf8',
+      function (err) {
+        if (err) throw err;
+      });
+    for (let i = 0; i < reqUrls.length; i++) {
       await page.goto(reqUrls[i].url, {waitUntil: 'networkidle2'});
       await page.waitFor(waitTime);
     }
